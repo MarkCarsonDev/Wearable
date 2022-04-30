@@ -1,1 +1,6 @@
 This app will use image recognition to find your shirt and change the color of it to a color you want.
+
+-- TO DO --
+Shirt detection
+    Find face
+    Use ratios (+ L + I fucked your mom + seethe + cope + mald)
