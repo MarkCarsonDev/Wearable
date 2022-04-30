@@ -1,5 +1,6 @@
 # Libraries
 import cv2 as cv
+import numpy as np
 from PIL import Image, ImageDraw
 
 # Local classes
@@ -11,24 +12,30 @@ def main():
     run = True
 
     while (run):
-        image = Webcam.get_image(cam, mirror=True)
+        im_cv = Webcam.get_image(cam, mirror=True)
 
-        matches = RegionDetection.getMatchBounds(image, 'upperBody')
-
-        for (corner1, corner2) in matches:
-            cv.rectangle(image, corner1, corner2, (255, 0, 255), 2)
-
-        matches = RegionDetection.getMatchBounds(image, 'lowerBody')
+        matches = RegionDetection.getMatchBounds(im_cv, 'upperBody')
 
         for (corner1, corner2) in matches:
-            cv.rectangle(image, corner1, corner2, (0, 0, 255), 2)
+            cv.rectangle(im_cv, corner1, corner2, (255, 0, 255), 2)
 
-        matches = RegionDetection.getMatchBounds(image, 'face')
+        im_cv = cv.cvtColor(im_cv, cv.COLOR_BGR2RGB)
+        im_pil = Image.fromarray(im_cv)
 
-        for (corner1, corner2) in matches:
-            cv.rectangle(image, corner1, corner2, (255, 255, 255), 2)
 
-        cv.imshow('bounding box gaming', image)
+        color = (255, 255, 255)
+
+        shirtCenters = []
+        for ((x, y), (a, b)) in matches:
+            shirtCenters.append( ((a-x) * 2, b) )
+        
+        for coord in shirtCenters:
+            ImageDraw.floodfill(im_pil, coord, color, thresh=50)
+
+        im_np = np.asarray(im_pil)
+        im_cv = cv.cvtColor(im_np, cv.COLOR_RGB2BGR)
+
+        cv.imshow('bounding box gaming', im_cv)
 
         k = cv.waitKey(30) & 0xff
         if k==27:
