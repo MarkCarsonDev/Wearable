@@ -11,28 +11,28 @@ def getMatchBounds(image, region='body'):
     
     if region == 'face':
         matches = face_cascade.detectMultiScale(
-                                image, 
+                                gray, 
                                 scaleFactor=1.08, 
                                 minNeighbors=3, 
                                 minSize=(30, 30),
                                 flags=cv2.CASCADE_SCALE_IMAGE)
     elif region == 'upperBody':
         matches = upperbody_cascade.detectMultiScale(
-                                image, 
-                                scaleFactor=1.08, 
-                                minNeighbors=3, 
-                                minSize=(30, 30),
+                                gray, 
+                                scaleFactor=1.06, 
+                                minNeighbors=4, 
+                                minSize=(50, 50),
                                 flags=cv2.CASCADE_SCALE_IMAGE)
     elif region == 'lowerBody':
         matches = lowerbody_cascade.detectMultiScale(
-                                image, 
+                                gray, 
                                 scaleFactor=1.08, 
                                 minNeighbors=3, 
                                 minSize=(30, 30),
                                 flags=cv2.CASCADE_SCALE_IMAGE)
     else:
         matches = body_cascade.detectMultiScale(
-                                image, 
+                                gray, 
                                 scaleFactor=1.08, 
                                 minNeighbors=3, 
                                 minSize=(30, 30),
