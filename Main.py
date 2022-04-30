@@ -13,38 +13,51 @@ def main():
 
     while (run):
         im_cv = Webcam.get_image(cam, mirror=True)
+        #im_cv = cv.resize(im_cv, (0, 0), fx=0.5, fy=0.5)
 
-        matches = RegionDetection.getMatchBounds(im_cv, 'face')
+        match = RegionDetection.getMatchBounds(im_cv, 'face')
+        
+        x = match[0]
+        y = match[1]
+        w = match[2]
+        h = match[3]
 
-        for (corner1, corner2) in matches:
-            cv.rectangle(im_cv, corner1, corner2, (255, 0, 255), 2)
+        cv.rectangle(im_cv, (x, y), (x+w, y+h), (255, 0, 255), 2)
+    
+        sV = 0.5
 
-        sV = 0.2
+        #im_cv = cv.resize(im_cv, (0, 0), fx=sV, fy=sV)
 
-        im_cv = cv.cvtColor(im_cv, cv.COLOR_BGR2RGB)
-        im_cv = cv.resize(im_cv, (0, 0), fx=sV, fy=sV)
+        color = (255, 255, 255)
+        shirtCenter = (0, 0)
+
+        # x = int(x * sV)
+        # y = int(y * sV)
+        # w = int(w * sV)
+        # h = int(h * sV)
+
+        shirtCenter = int((2 * x + w) / 2), min(y + 2 * h, im_cv.shape[0])
+
+        shirtCorners = [(max(int(shirtCenter[0] - 2.5 * w), 0), max(y+h, 0)), (min(int(shirtCenter[0] + 2.5 * w), im_cv.shape[1]), min(shirtCenter[0] + 3 * h, im_cv.shape[0]))]
+
+        cv.rectangle(im_cv, (shirtCenter[0]-1, shirtCenter[1]-1), (shirtCenter[0]+1, shirtCenter[1]+1), (255, 255, 0), 5)
+        cv.rectangle(im_cv, shirtCorners[0], shirtCorners[1], (255, 255, 0), 5)
+    
+        im_cv = cv.cvtColor(im_cv, cv.COLOR_BGR2RGB) 
+        im_cv_hsv = cv.cvtColor(im_cv, cv.COLOR_BGR2HSV_FULL)
+
+        lightest_pixel = (0, 0, 0)
+        for o in range(shirtCorners[1][0] - shirtCorners[0][0]):
+            for p in range(shirtCorners[1][1] - shirtCorners[0][1]):
+                if im_cv_hsv[shirtCorners[0][0] + o - 1][shirtCorners[0][1] + p - 1][2] > lightest_pixel[2]:
+                    print(lightest_pixel[2])
+                    lightest_pixel = (o, p, im_cv_hsv[shirtCorners[0][0] + o][shirtCorners[0][1] + p][2])
+
+        cv.rectangle(im_cv, (lightest_pixel[0]-1, lightest_pixel[1]-1), (lightest_pixel[0]+1, lightest_pixel[1]+1), (0, 255, 0), 7)
 
         im_pil = Image.fromarray(im_cv)
 
-
-        color = (255, 255, 255)
-
-
-        shirtCenters = []
-        for ((x, y), (a, b)) in matches:
-            x = int(x * sV)
-            y = int(y * sV)
-            a = int(a * sV)
-            b = int(b * sV)
-            
-            shirtCenters.append( ((a-x) * 2, b) )
-            if (b - y) > 3 and (a - x) > 3: 
-                print(f"{x},{y} to {a},{b}")
-                cv.imshow('bounding box gaming', im_cv[y:b, x:a])
-    
-        
-        for coord in shirtCenters:
-            ImageDraw.floodfill(im_pil, coord, color, thresh=65)
+        ImageDraw.floodfill(im_pil, shirtCenter, color, thresh=85)
 
         im_np = np.asarray(im_pil)
         im_cv = cv.cvtColor(im_np, cv.COLOR_RGB2BGR)

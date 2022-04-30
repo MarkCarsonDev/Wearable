@@ -37,12 +37,13 @@ def getMatchBounds(image, region='body'):
                                 minNeighbors=3, 
                                 minSize=(30, 30),
                                 flags=cv2.CASCADE_SCALE_IMAGE)
-
-    matchList = []
+   
+    match = (0, 0, 1, 1)
     # Add the bounding box corners to upperBodyList as a tuple
     for (x, y, w, h) in matches:
-        matchList.append( ((x, y), ((x+w), (y+h))) )
-    # Display
-    return matchList
+        if (w * h) > match[2] * match[3]:
+            match = (x, y, w, h)
+    
+    return match
 
 
