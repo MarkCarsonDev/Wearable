@@ -1,15 +1,43 @@
 # Libraries
 import cv2 as cv
+from PIL import Image, ImageDraw
 
 # Local classes
 import Webcam
-import FindFaces as faces
+import RegionDetection 
 
 def main():
     cam = cv.VideoCapture(0)
-    image = Webcam.get_image(cam, mirror=True)
+    run = True
 
-    faces.facebox()
+    while (run):
+        image = Webcam.get_image(cam, mirror=True)
+
+        matches = RegionDetection.getMatchBounds(image, 'upperBody')
+
+        for (corner1, corner2) in matches:
+            cv.rectangle(image, corner1, corner2, (255, 0, 255), 2)
+
+        matches = RegionDetection.getMatchBounds(image, 'lowerBody')
+
+        for (corner1, corner2) in matches:
+            cv.rectangle(image, corner1, corner2, (0, 0, 255), 2)
+
+        matches = RegionDetection.getMatchBounds(image, 'face')
+
+        for (corner1, corner2) in matches:
+            cv.rectangle(image, corner1, corner2, (255, 255, 255), 2)
+
+        cv.imshow('bounding box gaming', image)
+
+        k = cv.waitKey(30) & 0xff
+        if k==27:
+            run = False
+            break
+
+    cam.release()
+
+    
 
 if __name__ == "__main__":
     main()
