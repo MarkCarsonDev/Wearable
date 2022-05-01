@@ -24,11 +24,9 @@ def main():
 
         cv.rectangle(im_cv, (x, y), (x+w, y+h), (255, 0, 255), 1)
     
-        sV = 0.5
+        sV = 1
 
         im_cv = cv.resize(im_cv, (0, 0), fx=sV, fy=sV)
-
-        color = [0.8, 0.6, 0.2]
         shirtCenter = (0, 0)
 
         x = int(x * sV)
@@ -59,7 +57,7 @@ def main():
 
         im_cv_hsv = cv.cvtColor(im_cv, cv.COLOR_BGR2HSV)
         shirtColor = im_cv_hsv[shirtCenter[1] - 1][shirtCenter[0]]
-        color = [130, 170, 130]
+        color = [0.3,0.7,1]
         shirtMask(im_cv, shirtColor, color, shirtCorners)
 
     cam.release()
@@ -74,31 +72,30 @@ def shirtMask(im_cv, maskColor, color, corners):
 
     # Define lower and upper limits of what we call "white-ish"
     sensitivity = 120
-    print(maskColor)
     lower = np.array([0, 0, 10])
-    upper = np.array([255, 50, 255])
+    upper = np.array([255, 40, 245])
 
     # Create mask to only select white
     mask = cv.inRange(hsv, lower, upper)
 
     # Draw new rectangular mask on old mask that is black inside the rectangle and white outside the rectangle
     mask2 = mask.copy()
-    cv.rectangle(mask2, corners[0], corners[1], 0, 999)
+    cv.rectangle(mask2, corners[0], corners[1], 0, -1)
 
     # Change image to grey where we found white for combined mask
     #result = im_cv.copy()
     #result[mask2 > 0] = color
 
     a = np.where(mask > 0)
-    b = np.where(mask2 > 0)
     ones = np.ones_like(im_cv)
-    ones[a] = [1, 1, 0.8]
+    ones[a] = color
     result = im_cv*ones
 
     cv.imshow('mask2', mask2 )
     cv.imshow('bruh', im_cv)
     cv.imshow('mask', mask)
 
+    result = cv.resize(result, (0, 0), fx=1, fy=1)
     cv.imshow('result', result)
     
 
