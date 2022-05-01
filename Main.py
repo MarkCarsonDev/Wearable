@@ -1,7 +1,7 @@
 # Libraries
 import cv2 as cv
 import numpy as np
-from PIL import Image, ImageDraw
+
 
 # Local classes
 import Webcam
