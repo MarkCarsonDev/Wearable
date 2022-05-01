@@ -1,7 +1,7 @@
 # Libraries
 import cv2 as cv
 import numpy as np
-from PIL import Image, ImageDraw
+
 
 # Local classes
 import Webcam
@@ -105,8 +105,7 @@ def shirtMask(im_cv, shirtColor):
     cv.imshow('result', result)
     cv.waitKey(0)
     cv.destroyAllWindows()
-
-    
+  
 
 if __name__ == "__main__":
     main()
