@@ -1,4 +1,4 @@
-# MarinaHacks 2022
+# Wearable
 
 At CSULB, Women in Computing (WiC) holds an annual hackathon named MarinaHacks, where you're given 12 hours to create a project and present it.
 
